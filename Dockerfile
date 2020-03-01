@@ -12,6 +12,7 @@ ENV CONAN_ENV_ARCH=x86 \
 RUN apt-get -qq update \
     && apt-get -qq install -y --no-install-recommends \
        vim \
+       zsh \
        unzip \
        sudo=1.* \
        build-essential=12.* \
@@ -64,8 +65,6 @@ RUN apt-get -qq update \
        && update-alternatives --install /usr/bin/pyenv pyenv /opt/pyenv/bin/pyenv 100 \
        && PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install 3.7.1 \
        && pyenv global 3.7.1 \
-       && pip install -q --upgrade --no-cache-dir pip \
-       && pip install -q --no-cache-dir conan conan-package-tools \
        && chown -R conan:1001 /opt/pyenv \
        # remove all __pycache__ directories created by pyenv
     && find /opt/pyenv -iname __pycache__ -print0 | xargs -0 rm -rf \
@@ -73,6 +72,15 @@ RUN apt-get -qq update \
        && update-alternatives --install /usr/bin/python3 python3 /opt/pyenv/shims/python3 100 \
        && update-alternatives --install /usr/bin/pip pip /opt/pyenv/shims/pip 100 \
        && update-alternatives --install /usr/bin/pip3 pip3 /opt/pyenv/shims/pip3 100
+
+RUN apt-get -qq update \
+    && apt-get -qq install -y --no-install-recommends \
+    && pip3 install -q --upgrade --no-cache-dir pip \
+    && pip3 install -q --no-cache-dir conan==1.22.2 conan-package-tools
+
+RUN apt-get -qq update \
+    && apt-get -qq install -y --no-install-recommends \
+    wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
 
 USER conan
 WORKDIR /home/conan
